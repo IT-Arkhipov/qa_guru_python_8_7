@@ -25,7 +25,7 @@ def tmp_folder():
 
     yield
 
-    shutil.rmtree(zip_folder, ignore_errors=True)
+    shutil.rmtree(zip_folder)
 
 
 

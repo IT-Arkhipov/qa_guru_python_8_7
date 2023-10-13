@@ -29,10 +29,11 @@ def test_is_same_txt_file():
 
     # ACT
     with ZipFile(zip_file) as zf:
-        text_file = zf.read(test_file_name).decode(encoding='utf-8')
-        # ASSERT
-        assert test_file_size == zf.getinfo(test_file_name).file_size
-        assert searched_text in text_file
+        with zf.open(test_file_name) as tf:
+            text_file = tf.read().decode(encoding='utf-8')
+            # ASSERT
+            assert test_file_size == zf.getinfo(test_file_name).file_size
+            assert searched_text in text_file
 
 
 def test_is_same_pdf_file():
@@ -46,10 +47,11 @@ def test_is_same_pdf_file():
 
     # ACT
     with ZipFile(zip_file) as zf:
-        pdf_file = PdfReader(zf.open(test_file_name))
-        # ASSERT
-        assert test_file_size == zf.getinfo(test_file_name).file_size
-        assert searched_text in pdf_file.pages[0].extract_text()
+        with zf.open(test_file_name) as pf:
+            pdf_file = PdfReader(pf)
+            # ASSERT
+            assert test_file_size == zf.getinfo(test_file_name).file_size
+            assert searched_text in pdf_file.pages[0].extract_text()
 
 
 def test_is_same_xls_file():
@@ -63,10 +65,11 @@ def test_is_same_xls_file():
 
     # ACT
     with ZipFile(zip_file) as zf:
-        xls_file = xlrd.open_workbook(file_contents=zf.read(test_file_name))
-        # ASSERT
-        assert test_file_size == zf.getinfo(test_file_name).file_size
-        assert searched_text == xls_file.sheet_by_index(0).cell_value(0, 0)
+        with zf.open(test_file_name) as xf:
+            xls_file = xlrd.open_workbook(file_contents=xf.read())
+            # ASSERT
+            assert test_file_size == zf.getinfo(test_file_name).file_size
+            assert searched_text == xls_file.sheet_by_index(0).cell_value(0, 0)
 
 
 def test_is_same_xlsx_file():
@@ -80,7 +83,8 @@ def test_is_same_xlsx_file():
 
     # ACT
     with ZipFile(zip_file) as zf:
-        xlsx_file = load_workbook(zf.open(test_file_name, 'r'))
-        # ASSERT
-        assert test_file_size == zf.getinfo(test_file_name).file_size
-        assert searched_text == xlsx_file.active.cell(3, 2).value
+        with zf.open(test_file_name) as xxf:
+            xlsx_file = load_workbook(xxf)
+            # ASSERT
+            assert test_file_size == zf.getinfo(test_file_name).file_size
+            assert searched_text == xlsx_file.active.cell(3, 2).value
